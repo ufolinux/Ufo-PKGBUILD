@@ -1,0 +1,29 @@
+pkgname=libzip
+pkgver=1.9.2
+pkgrel=1
+arch=(x86_64)
+depends=(zlib bzip2 zstd openssl gnutls)
+makedepends=(cmake ninja)
+source=(https://libzip.org/download/${pkgname}-${pkgver}.tar.xz)
+
+prepare() {
+	cd $pkgname-$pkgver
+
+	cmake \
+	-S . \
+	-B build \
+	-GNinja \
+	-DCMAKE_INSTALL_PREFIX=/usr
+}
+
+build() {
+	cd $pkgname-$pkgver
+
+	ninja -C build
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	DESTDIR=$pkgdir ninja -C build
+}

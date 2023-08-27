@@ -1,0 +1,20 @@
+pkgname=base-install-scripts
+pkgver=2023.1
+pkgrel=1
+arch=('x86_64')
+depends=(bash coreutils grep kepler util-linux git)
+makedepends=(asciidoc)
+commitid=1a4de9b3a137c3a0eded360550142c7afa61a297
+source=(git+https://github.com/ufolinux/base-install-scripts#commit=$commitid)
+
+build() {
+        cd $pkgname
+
+        make
+}
+
+package() {
+	cd $pkgname
+
+	make DESTDIR=$pkgdir install
+}

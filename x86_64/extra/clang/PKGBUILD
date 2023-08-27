@@ -1,0 +1,70 @@
+pkgname=clang
+pkgver=16.0.5
+pkgrel=1
+makedepends=('cmake' 'python3' 'llvm' 'python3-sphinx')
+depends=('llvm' 'compiler-rt' 'gcc' 'python3')
+arch=('x86_64')
+psource=https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver
+source=($psource/$pkgname-$pkgver.src.tar.xz
+	$psource/clang-tools-extra-$pkgver.src.tar.xz
+	$psource/llvm-$pkgver.src.tar.xz
+	$psource/cmake-$pkgver.src.tar.xz)
+
+prepare() {
+	mv $pkgname-$pkgver.src $pkgname
+	mv llvm-$pkgver.src llvm
+	mv cmake-$pkgver.src cmake
+
+	mkdir -p build
+
+	mv $srcdir/clang-tools-extra-$pkgver.src $srcdir/clang/tools/extra
+}
+
+build() {
+	cd build
+
+	cmake .. \
+	-G Ninja \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CLANG_LINK_CLANG_DYLIB=ON \
+	-D CLANG_DEFAULT_PIE_ON_LINUX=ON \
+	-D CLANG_LINK_CLANG_DYLIB=ON \
+	-D LLVM_MAIN_SRC_DIR="$srcdir/llvm" \
+	-D LLVM_INSTALL_UTILS=ON \
+	-D LLVM_ENABLE_RTTI=ON \
+	-D LLVM_EXTERNAL_LIB=/usr/bin/lit \
+	-D LLVM_INCLUDE_BENCHMARKS=OFF \
+	-D LLVM_INCLUDE_TESTS=OFF \
+	-D SPHINX_WARNINGS_AS_ERRORS=OFF \
+	-D LLVM_BUILD_TESTS=OFF \
+	-D LLVM_BUILD_DOCS=OFF \
+	-D LLVM_BINUTILS_INCDIR=/usr/include
+
+	ninja
+}
+
+python_optimize() {
+	python3 -m compileall "$@"
+	python3 -O -m compileall "$@"
+	python -OO -m compileall "$@"
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+
+	local site_packages=$(python3 -c "import site; print(site.getsitepackages()[0])")
+	install -d "$pkgdir/$site_packages"
+	mv "$pkgdir"/usr/lib/{libear,libscanbuild} "$pkgdir/$site_packages"
+	cp -a ../clang/bindings/python/clang "$pkgdir/$site_packages/"
+
+	mv "$pkgdir"/usr/libexec/* "$pkgdir/usr/lib/clang"
+	rm -rf "$pkgdir/usr/libexec"
+	sed -i 's|libexec|lib/clang|' \
+		"$pkgdir/usr/bin/scan-build" \
+		"$pkgdir/$site_packages/libscanbuild/analyze.py"
+
+	python_optimize "$pkgdir/usr/share" "$pkgdir/$site_packages"
+}

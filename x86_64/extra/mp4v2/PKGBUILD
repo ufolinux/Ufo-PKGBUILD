@@ -1,0 +1,22 @@
+pkgname=mp4v2
+pkgver=2.1.3
+pkgrel=1
+arch=(x86_64)
+depends=(glibc)
+makedepends=(automake)
+source=(https://github.com/enzo1982/mp4v2/releases/download/v$pkgver/mp4v2-$pkgver.tar.bz2)
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure \
+	--prefix=/usr
+
+	make -j6
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR=$pkgdir install
+}

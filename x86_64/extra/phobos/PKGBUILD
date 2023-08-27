@@ -1,0 +1,43 @@
+pkgname=phobos
+pkgver=1.32.2
+pkgrel=1
+arch=(x86_64)
+depends=(gcc compiler-rt llvm curl lld spirv-llvm-translator)
+makedepends=(cmake ninja git ldc)
+source=(https://github.com/ldc-developers/phobos/archive/refs/tags/ldc-v$pkgver.tar.gz)
+
+prepare() {
+	# Remove old src
+	rm -rf ldc-phobos
+
+	mv $srcdir/phobos-ldc-v$pkgver ldc-phobos
+
+	mkdir -p build
+}
+
+build() {
+	cd build
+
+	CXX=clang++ \
+	CC=clang \
+	LD=clang \
+	cmake \
+	-G Ninja \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D INCLUDE_INSTALL_DIR=/usr/include/dlang/ldc \
+	-D BUILD_SHARED_LIBS=BOTH \
+	-D BUILD_LTO_LIBS=OFF \
+	-D LDC_INSTALL_LTOPLUGIN=OFF \
+	-D LDC_WITH_LLD=ON \
+	-D CMAKE_PREFIX_PATH=/usr/lib/llvm \
+	../ldc-phobos
+
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

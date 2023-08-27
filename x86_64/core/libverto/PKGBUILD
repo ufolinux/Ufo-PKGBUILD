@@ -1,0 +1,23 @@
+pkgname=libverto
+pkgver=0.3.2
+pkgrel=1
+arch=('x86_64')
+depends=(libevent glib2 libev)
+makedepends=(gcc)
+source=(https://github.com/latchset/libverto/releases/download/$pkgver/libverto-$pkgver.tar.gz)
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure \
+	--prefix=/usr \
+	--with-libevent
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR="$pkgdir" install
+}

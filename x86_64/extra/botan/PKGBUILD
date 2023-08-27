@@ -1,0 +1,27 @@
+pkgname=botan
+pkgver=3.0.0
+pkgrel=1
+arch=(x86_64)
+depends=(sqlite3 xz boost python3)
+makedepends=(python3-pip)
+source=(https://botan.randombit.net/releases/Botan-$pkgver.tar.xz)
+
+build() {
+	cd Botan-$pkgver
+
+	./configure.py \
+	--prefix=/usr \
+	--with-boost \
+	--with-bzip2 \
+	--with-lzma \
+	--with-sqlite3 \
+	--with-zlib
+
+	make
+}
+
+package() {
+	cd Botan-$pkgver
+
+	make DESTDIR=$pkgdir install
+}

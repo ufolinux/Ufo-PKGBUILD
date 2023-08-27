@@ -1,0 +1,38 @@
+pkgname=compiler-rt
+pkgver=16.0.5
+pkgrel=1
+makedepends=('cmake' 'python3' 'python3-pip' 'llvm')
+arch=('x86_64')
+psource=https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver
+source=($psource/$pkgname-$pkgver.src.tar.xz
+	$psource/cmake-$pkgver.src.tar.xz)
+
+prepare() {
+	mkdir -p build
+
+	mv cmake-$pkgver.src cmake
+}
+
+build() {
+	cd build
+	
+	sleep 30
+
+	cmake \
+	-G Ninja \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D COMPILER_RT_INSTALL_PATH=/usr/lib/clang/$pkgver \
+	../$pkgname-$pkgver.src
+	
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+
+	cd $pkgdir/usr/lib
+	ln -sf linux wasi
+}

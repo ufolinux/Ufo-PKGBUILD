@@ -1,0 +1,74 @@
+pkgname=ldc
+pkgver=1.32.2
+pkgrel=1
+arch=(x86_64)
+depends=(gcc compiler-rt llvm curl lld spirv-llvm-translator)
+makedepends=(cmake ninja git)
+source=(https://github.com/ldc-developers/ldc/releases/download/v1.32.2/ldc2-$pkgver-linux-x86_64.tar.xz
+	ldc2.conf)
+old_source=(https://github.com/$pkgname-developers/$pkgname/releases/download/v$pkgver-beta2/$pkgname-$pkgver-beta2-src.tar.gz
+	https://github.com/$pkgname-developers/phobos/archive/refs/tags/$pkgname-v$pkgver-beta2.tar.gz)
+
+
+package() {
+	mkdir -p $pkgdir/usr $pkgdir/usr/include/dlang/
+
+	cp -rf ldc2-$pkgver-linux-x86_64/* $pkgdir/usr/
+
+	rm -f $pkgdir/usr/{LICENSE,README}
+	mv $pkgdir/usr/etc $pkgdir/etc
+	mv $pkgdir/usr/import $pkgdir/usr/include/dlang/ldc
+	cp -f $srcdir/ldc2.conf $pkgdir/etc/ldc2.conf
+}
+
+
+#
+# remove old when llvm-16 is supported by them
+#
+
+old_prepare() {
+	# Remove old src
+	rm -rf ldc ldc-phobos
+
+	# Rename the folders
+	mv $srcdir/ldc-$pkgver-beta2-src ldc
+	mv $srcdir/phobos-ldc-v$pkgver-beta2 ldc-phobos
+
+	mkdir -p build
+
+	# Submodule hacks
+	cd ldc
+
+	git submodule init
+	git config submodule.phobos.url "$srcdir/ldc-phobos"
+	git -c protocol.file.allow=always submodule update
+
+	sed -i "s/ldc::llvm_version_base/\"16.0.5\"/" driver/linker-gcc.cpp
+}
+
+old_build() {
+	cd build
+
+	CXX=clang++ \
+	CC=clang \
+	LD=clang \
+	cmake \
+	-G Ninja \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D INCLUDE_INSTALL_DIR=/usr/include/dlang/ldc \
+	-D BUILD_SHARED_LIBS=BOTH \
+	-D BUILD_LTO_LIBS=OFF \
+	-D LDC_INSTALL_LTOPLUGIN=OFF \
+	-D LDC_WITH_LLD=ON \
+	-D CMAKE_PREFIX_PATH=/usr/lib/llvm \
+	../ldc
+
+	ninja
+}
+
+old_package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

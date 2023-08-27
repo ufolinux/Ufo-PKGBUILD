@@ -1,0 +1,29 @@
+pkgname=editorconfig-core-c
+pkgver=0.12.6
+pkgrel=1
+arch=(x86_64)
+depends=(pcre2)
+makedepends=(cmake doxygen)
+source=(https://github.com/editorconfig/$pkgname/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+
+prepare() {
+	mkdir -p build
+
+	cmake \
+	-B build \
+	-S $pkgname-$pkgver \
+	-G Ninja \
+	-D CMAKE_INSTALL_PREFIX=/usr
+}
+
+build() {
+	cd build
+
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

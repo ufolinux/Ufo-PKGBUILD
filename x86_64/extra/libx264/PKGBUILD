@@ -1,0 +1,27 @@
+pkgname=libx264
+rname=x264
+pkgver=2023.2
+pkgrel=1
+arch=(x86_64)
+depends=(l-smash)
+makedepends=(automake)
+commitid=a8b68ebfaa68621b5ac8907610d3335971839d52
+source=(https://code.videolan.org/videolan/x264/-/archive/$commitid/x264-$commitid.tar.gz)
+
+build() {
+	cd $rname-$commitid
+
+	./configure \
+	--prefix=/usr \
+	--enable-shared \
+	--enable-pic \
+	--enable-lto
+
+	make
+}
+
+package() {
+	cd $rname-$commitid
+
+	make DESTDIR=${pkgdir} install
+}

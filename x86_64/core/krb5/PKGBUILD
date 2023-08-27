@@ -1,0 +1,60 @@
+pkgname=krb5
+pkgver=1.20.1
+relver=1.20
+pkgrel=1
+arch=('x86_64')
+depends=(e2fsprogs openldap keyutils libverto)
+makedepends=(perl)
+source=(https://web.mit.edu/kerberos/dist/krb5/${relver}/${pkgname}-${pkgver}.tar.gz
+	https://github.com/krb5/krb5/commit/0bfd22feb6493f34fdc894daaf680c3a2f2e7784.patch
+
+	krb5-kadmind.service
+	krb5-kdc.service
+	krb5-kpropd.service
+	krb5-kpropd@.service
+	krb5-kpropd.socket)
+backup=(
+	etc/krb5.conf
+	var/lib/krb5kdc/kdc.conf)
+
+prepare() {
+	cd $pkgname-$pkgver
+
+	patch -p1 -i $srcdir/0bfd22feb6493f34fdc894daaf680c3a2f2e7784.patch
+	sed -i "/KRB5ROOT=/s/\/local//" src/util/ac_check_krb5.m4
+}
+
+build() {
+	cd $pkgname-$pkgver/src
+
+	./configure \
+	--prefix=/usr \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
+	--enable-shared \
+	--enable-dns-for-realm \
+	--with-system-et \
+	--with-system-ss \
+	--with-ldap \
+	--with-system-verto
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver/src
+
+	make EXAMPLEDIR=/usr/share/doc/$pkgname/examples DESTDIR=$pkgdir install
+
+	install -m 644 plugins/kdb/ldap/libkdb_ldap/kerberos.{ldif,schema} \
+	"${pkgdir}/usr/share/doc/${pkgname}/examples"
+
+	install -Dpm 644 config-files/krb5.conf -t "${pkgdir}/etc"
+	install -Dpm 644 config-files/kdc.conf -t "${pkgdir}/var/lib/krb5kdc"
+
+	install -Dm 644 "${srcdir}"/krb5-{kadmind.service,kdc.service,kpropd.service,kpropd@.service,kpropd.socket} \
+	-t "${pkgdir}/usr/lib/systemd/system"
+
+	# Will conflict with /var/run symlink
+	rm -rf $pkgdir/var/run
+}

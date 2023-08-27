@@ -1,0 +1,23 @@
+pkgname=guile
+pkgver=3.0.9
+pkgrel=1
+arch=(x86_64)
+depends=(gc gmp libffi libunistring libxcrypt ncurses)
+makedepends=(texinfo)
+source=(https://ftp.gnu.org/pub/gnu/$pkgname/$pkgname-$pkgver.tar.gz)
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure \
+	--prefix=/usr \
+	--disable-error-on-warning
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR=$pkgdir install
+}

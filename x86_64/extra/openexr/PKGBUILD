@@ -1,0 +1,30 @@
+pkgname=openexr
+pkgver=3.1.7
+pkgrel=1
+arch=(x86_64)
+depends=(imath zlib)
+makedepends=(cmake gcc glibc)
+source=(https://github.com/openexr/openexr/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+
+prepare() {
+	mkdir -p build
+
+	cmake \
+	-B build \
+	-G Ninja \
+	-S $pkgname-$pkgver \
+    -D CMAKE_INSTALL_PREFIX=/usr \
+    -D CMAKE_BUILD_TYPE=None
+}
+
+build() {
+	cd build
+
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

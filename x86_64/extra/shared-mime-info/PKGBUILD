@@ -1,0 +1,28 @@
+pkgname=shared-mime-info
+pkgver=2.2
+pkgrel=1
+pkgdesc="Freedesktop.org Shared MIME Info"
+arch=('x86_64')
+depends=('libxml2' 'glib2')
+makedepends=('gettext' 'xmlto' 'docbook-xsl' 'git' 'meson')
+install=shared-mime-info.install
+url="https://www.freedesktop.org/wiki/Specifications/shared-mime-info-spec/"
+source=(https://gitlab.freedesktop.org/xdg/shared-mime-info/-/archive/$pkgver/shared-mime-info-$pkgver.tar.gz
+    update-mime-database.hook)
+
+build() {
+    meson $pkgname-$pkgver build \
+    --prefix=/usr \
+    --bindir=/usr/bin \
+    -D update-mimedb=false \
+    -D xdgmime-path=${srcdir}/xdgmime
+
+    # compile it
+    ninja -C build
+}
+
+package() {
+    DESTDIR="$pkgdir" meson install -C build
+
+    install -Dm644 "$srcdir"/update-mime-database.hook "$pkgdir"/usr/share/libalpm/hooks/30-update-mime-database.hook
+}

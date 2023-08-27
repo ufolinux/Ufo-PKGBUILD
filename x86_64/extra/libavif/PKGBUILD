@@ -1,0 +1,31 @@
+pkgname=libavif
+pkgver=0.11.1
+pkgrel=1
+arch=(x86_64)
+depends=(libjpeg libpng zlib libaom)
+makedepends=(cmake gdk-pixbuf nasm pkgconf)
+source=(https://github.com/AOMediaCodec/$pkgname/archive/refs/tags/v$pkgver.tar.gz)
+
+prepare() {
+	mkdir -p build
+
+	cmake \
+	-B build \
+	-S $pkgname-$pkgver \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D AVIF_BUILD_APPS=ON \
+	-D AVIF_CODEC_AOM=ON \
+	-D AVIF_BUILD_GDK_PIXBUF=ON
+}
+
+build() {
+	cd build
+
+	make
+}
+
+package() {
+	cd build
+
+	make DESTDIR=$pkgdir install
+}

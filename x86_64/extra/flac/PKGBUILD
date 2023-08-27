@@ -1,0 +1,32 @@
+pkgname=flac
+pkgver=1.4.3
+pkgrel=1
+arch=(x86_64)
+depends=(libogg)
+makedepends=(nasm cmake ninja doxygen)
+source=(https://github.com/xiph/flac/releases/download/$pkgver/flac-$pkgver.tar.xz)
+
+prepare() {
+	mkdir -p build
+
+	cmake \
+	-S $pkgname-$pkgver \
+	-B build \
+	-G Ninja \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D BUILD_SHARED_LIBS=ON \
+	-D NDEBUG=ON
+}
+
+build() {
+	cd build
+
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

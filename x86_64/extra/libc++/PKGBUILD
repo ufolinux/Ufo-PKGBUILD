@@ -1,0 +1,31 @@
+pkgname=libc++
+pkgver=16.0.5
+pkgrel=1
+arch=(x86_64)
+depends=(llvm gcc)
+makedepends=(clang ninja cmake python3)
+source=(https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver/llvm-project-$pkgver.src.tar.xz)
+
+prepare() {
+	mkdir -p build
+
+	cmake \
+	-G Ninja \
+	-B build \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_C_COMPILER=clang \
+	-D CMAKE_CXX_COMPILER=clang++ \
+	-D LLVM_ENABLE_RUNTIMES="libcxx;libcxxabi" \
+	-D LLVM_EXTERNAL_LIT=/usr/bin/lit \
+	-D LLVM_ENABLE_PIC=ON \
+	llvm-project-$pkgver.src/runtimes
+}
+
+build() {
+	ninja -C build cxx cxxabi
+}
+
+package() {
+	DESTDIR=$pkgdir ninja -C build install-cxx install-cxxabi
+}

@@ -1,0 +1,38 @@
+pkgname=avahi
+pkgver=v0.8.4.5
+pkgrel=1
+arch=(x86_64)
+depends=(libdaemon dbus expat gdbm glib2 libcap libevent nss gobject-introspection python3-gobject python3-dbus)
+makedepends=(git m4 gtk3+)
+commitid=1a09c3d9ac9b3fccd6144e6db9b4e2df3172b707
+source=(git+https://github.com/ufolinux/avahi#commit=$commitid)
+
+prepare() {
+	cd $pkgname
+
+	./configure \
+	--prefix=/usr \
+	with_dbus_sys=/usr/share/dbus-1/system.d \
+	--with-avahi-priv-access-group=network \
+	--with-autoipd-user=avahi \
+	--with-autoipd-group=avahi \
+	--with-systemdsystemunitdir=/usr/lib/systemd/system \
+	--with-distro=ufolinux \
+	--disable-mono \
+	--disable-manpages
+}
+
+build() {
+	cd $pkgname
+
+	make -j2
+}
+
+package() {
+	cd $pkgname
+
+	make DESTDIR=$pkgdir install
+
+	echo 'u avahi - "Avahi mDNS/DNS-SD daemon"' |
+		install -Dm644 /dev/stdin "$pkgdir/usr/lib/sysusers.d/$pkgname.conf"
+}

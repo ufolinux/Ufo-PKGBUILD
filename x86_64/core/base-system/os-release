@@ -1,0 +1,8 @@
+NAME="Ufo Linux"
+VERSION="2023.1"
+ID=Ufo
+ID_LIKE=Ufo
+PRETTY_NAME="Ufo Linux 2023.1 kepler"
+VERSION_ID="2023.1"
+VERSION_CODENAME="kepler"
+BUG_REPORT_URL="https://t.me/ufolinux"

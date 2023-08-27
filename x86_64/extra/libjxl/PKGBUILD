@@ -1,0 +1,40 @@
+pkgname=libjxl
+pkgver=0.8.1
+pkgrel=1
+arch=(x86_64)
+depends=(brotli giflib libjpeg libpng openexr)
+makedepends=(brotli nasm)
+source=(git+https://github.com/libjxl/libjxl.git#tag=v${pkgver})
+
+prepare() {
+	mkdir -p build
+
+	cd $pkgname
+	git submodule update --init --recursive
+	cd ..
+
+	cmake \
+	-B build \
+	-G Ninja \
+	-S $pkgname \
+	-D CMAKE_BUILD_TYPE=None \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D JPEGXL_ENABLE_BENCHMARK=false \
+	-D JPEGXL_ENABLE_EXAMPLES=false \
+	-D JPEGXL_ENABLE_FUZZERS=false \
+	-D BUNDLE_LIBPNG_DEFAULT=NO \
+	-D JPEGXL_FORCE_SYSTEM_BROTLI:BOOL='YES' \
+	-D BUILD_TESTING=OFF
+}
+
+build() {
+	cd build
+
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

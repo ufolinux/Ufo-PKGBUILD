@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Qt5 Designer
+Comment=Design GUIs for Qt5 applications
+Exec=/usr/bin/designer
+Icon=designer-qt5.png
+MimeType=text/vnd.trolltech.linguist;application/x-linguist;
+Terminal=false
+Encoding=UTF-8
+Type=Application
+Categories=Qt;Development;

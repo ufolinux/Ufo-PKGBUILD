@@ -1,0 +1,32 @@
+pkgname=aspell
+pkgver=0.60.9
+pkgrel=1
+arch=(x86_64)
+depends=(ncurses perl gcc)
+makedepends=(gcc make automake)
+commitid=cef82a83afc543caaed0aacc814ea4c15909203f
+source=(https://github.com/GNUAspell/aspell/archive/$commitid.tar.gz
+	https://patch-diff.githubusercontent.com/raw/GNUAspell/aspell/pull/584.patch)
+
+prepare() {
+	cd $pkgname-$commitid
+	patch -p1 -i ../584.patch
+
+	PERL_USE_UNSAFE_INC=1 ./autogen
+
+	./configure \
+	--prefix=/usr \
+	--sysconfdir=/etc
+}
+
+build() {
+	cd $pkgname-$commitid
+
+	make
+}
+
+package() {
+	cd $pkgname-$commitid
+
+	make DESTDIR=$pkgdir install
+}

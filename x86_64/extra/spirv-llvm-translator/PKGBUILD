@@ -1,0 +1,40 @@
+pkgname=spirv-llvm-translator
+pkgver=16.0.0
+pkgrel=1
+arch=('x86_64')
+depends=(llvm glslang)
+makedepends=('cmake' 'clang' 'python3' 'git' 'ninja')
+source=('https://github.com/KhronosGroup/SPIRV-LLVM-Translator/archive/llvm_release_160.zip')
+
+prepare() {
+	cd SPIRV-LLVM-Translator-llvm_release_160
+
+	rm -rf build && mkdir -p build
+}
+
+build() {
+	cd SPIRV-LLVM-Translator-llvm_release_160/build
+
+	cmake \
+	-G Ninja \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_INSTALL_LIBDIR=/usr/lib \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_SHARED_LIBS=ON \
+	-D CMAKE_SKIP_RPATH=ON \
+	-D LLVM_INCLUDE_TESTS=OFF \
+	-D LLVM_EXTERNAL_LIT=/usr/lib/lit \
+	..
+
+	ninja
+
+	ninja llvm-spirv
+}
+
+package() {
+	cd SPIRV-LLVM-Translator-llvm_release_160/build
+	mkdir -p $pkgdir/usr/bin
+
+	DESTDIR=$pkgdir ninja install
+	install -Dm755 tools/llvm-spirv/llvm-spirv $pkgdir/usr/bin/llvm-spirv
+}

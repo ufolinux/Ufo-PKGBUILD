@@ -1,0 +1,54 @@
+pkgname=qt5-webengine
+pkgver=5.15.14
+pkgrel=1
+arch=('x86_64')
+depends=(qt5 nodejs nss pciutils llvm clang bison ffmpeg minizip double-conversion
+	libx264 libx265 pipewire)
+makedepends=(extra-cmake-modules python3-pip python2-pip python2-setuptools)
+commitid_engine=872003d9ad187a9904e3b2b5ccc89c774839bec6 # 5.15.5
+url=https://invent.kde.org/qt/qt
+
+prepare() {
+	cd $srcdir
+
+	# Clone and checkout proper qtwebengine src
+	if [ ! -d $srcdir/qtwebengine ]; then
+		git clone $url/qtwebengine.git -b 5.15 qtwebengine
+	else
+		echo "No clone needed as dir exists"
+	fi
+
+	cd qtwebengine
+
+	# neverthless reset the whole source
+	git reset --hard $commitid_engine
+
+	# Now lets checkout the modules ( + force reset these from any old patches )
+	git submodule update --force --init src/3rdparty
+	git submodule update --init --recursive
+	git submodule foreach --recursive git reset --hard
+
+	# patching time
+}
+
+build() {
+	mkdir -p qtwebengine/build
+	cd qtwebengine/build
+
+	qmake ../ \
+	CONFIG+=force_debug_info \
+	EXTRA_GN="use_lld=true is_clang=true clang_use_chrome_plugins=false"  -- \
+	-system-ffmpeg \
+	-webp \
+	-spellchecker \
+	-webengine-icu \
+	-webengine-webrtc-pipewire
+
+	make
+}
+
+package() {
+	cd qtwebengine/build
+
+	make INSTALL_ROOT="$pkgdir" install
+}

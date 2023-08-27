@@ -1,0 +1,37 @@
+pkgname=libsamplerate
+pkgver=0.2.2
+pkgrel=1
+arch=(x86_64)
+depends=(alsa-lib libsndfile opus)
+makedepends=(cmake ninja)
+source=(https://github.com/libsndfile/$pkgname/releases/download/$pkgver/$pkgname-$pkgver.tar.xz)
+
+prepare() {
+	mkdir -p build-shared build-static
+
+	cmake \
+	-B $srcdir/build-shared \
+	-G Ninja \
+	-S $pkgname-$pkgver \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D BUILD_SHARED_LIBS=ON
+
+	cmake \
+	-B $srcdir/build-static \
+	-G Ninja \
+	-S $pkgname-$pkgver \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D BUILD_SHARED_LIBS=OFF
+}
+
+build() {
+	ninja -C build-shared
+	ninja -C build-static
+}
+
+package() {
+	DESTDIR=$pkgdir ninja -C build-static install
+	DESTDIR=$pkgdir ninja -C build-shared install
+}

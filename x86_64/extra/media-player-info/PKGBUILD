@@ -1,0 +1,31 @@
+pkgname=media-player-info
+pkgver=24
+pkgrel=1
+arch=(x86_64)
+depends=(systemd)
+makedepends=(git python3-pip)
+source=(https://gitlab.freedesktop.org/$pkgname/$pkgname/-/archive/$pkgver/$pkgname-$pkgver.tar.gz)
+
+prepare() {
+	cd $pkgname-$pkgver
+
+	NOCONFIGURE=1 \
+	./autogen.sh
+}
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure \
+	--prefix=/usr \
+	--with-udevdir=/usr/lib/udev
+
+	LANG="en_US.UTF-8" \
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR="$pkgdir" install
+}

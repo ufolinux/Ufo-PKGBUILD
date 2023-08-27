@@ -1,0 +1,28 @@
+pkgname=hunspell
+pkgver=1.7.2
+pkgrel=1
+arch=(x86_64)
+depends=(readline perl)
+makedepends=(gcc)
+source=(https://github.com/hunspell/hunspell/releases/download/v$pkgver/hunspell-$pkgver.tar.gz)
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure \
+	--prefix=/usr \
+	--with-ui \
+	--with-readline
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR=$pkgdir install
+
+	pushd $pkgdir/usr/lib
+		ln -s libhunspell-?.?.so libhunspell.so
+	popd
+}

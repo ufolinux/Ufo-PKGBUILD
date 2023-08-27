@@ -1,0 +1,40 @@
+pkgname=mingw-w64-headers
+pkgver=11.0.0
+pkgrel=1
+arch=(x86_64)
+cross_targets="i686-w64-mingw32 x86_64-w64-mingw32"
+targetsrc="mingw-w64-v$pkgver/mingw-w64-headers"
+source=(https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v$pkgver.tar.bz2)
+
+prepare() {
+	mkdir -pv $srcdir/{i686-w64-mingw32,x86_64-w64-mingw32}
+}
+
+build() {
+	for ctarget in $cross_targets; do
+		echo "Compiling $ctarget headers"
+
+		cd $ctarget
+
+		../$targetsrc/configure \
+		--host=$ctarget \
+		--prefix=/usr/cross/$ctarget \
+		--enable-sdk=all
+
+		make
+
+		cd ..
+	done
+}
+
+package() {
+	for ctarget in $cross_targets; do
+		echo "Installing $ctarget headers"
+
+		cd $ctarget
+
+		make DESTDIR=$pkgdir install
+
+		cd ..
+	done
+}

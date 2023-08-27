@@ -1,0 +1,26 @@
+pkgname=openal
+pkgver=1.23.1
+pkgrel=1
+arch=(x86_64)
+depends=(alsa-lib pulseaudio jack2 qt5 sdl2
+	libsndfile ffmpeg pipewire)
+makedepends=(git cmake ninja)
+commitid=3d9900476ec49b2994b7163a451a69560d498306  # 1.23.1 but from master branch with some more fixes
+source=("git+https://github.com/kcat/openal-soft#commit=$commitid")
+
+prepare() {
+	cd openal-soft
+}
+
+build() {
+	cmake -S openal-soft -B build -G Ninja \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_LIBDIR=lib
+
+	cmake --build build
+}
+
+package() {
+	DESTDIR="$pkgdir" cmake --install build
+}

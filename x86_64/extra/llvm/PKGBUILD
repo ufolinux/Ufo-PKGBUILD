@@ -1,0 +1,54 @@
+pkgname=llvm
+pkgver=16.0.5
+pkgrel=1
+depends=(libffi zstd libxml2 ncurses perl zlib libedit python3)
+makedepends=('cmake' 'ninja' 'pyython3-pip')
+arch=('x86_64')
+psource=https://github.com/llvm/llvm-project/releases/download/llvmorg-$pkgver
+source=($psource/$pkgname-$pkgver.src.tar.xz
+	$psource/cmake-$pkgver.src.tar.xz
+	llvm-config.h)
+
+prepare() {
+	cd $pkgname-$pkgver.src
+	mkdir -p build
+	
+	cd ..
+	mv cmake-$pkgver.src cmake
+}
+
+build() {
+	cd $pkgname-$pkgver.src/build
+	
+	cmake .. \
+	-G Ninja \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D LLVM_BUILD_LLVM_DYLIB=ON \
+	-D LLVM_LINK_LLVM_DYLIB=ON \
+	-D LLVM_INSTALL_UTILS=ON \
+	-D LLVM_ENABLE_RTTI=ON \
+	-D LLVM_ENABLE_FFI=ON \
+	-D LLVM_INCLUDE_BENCHMARKS=OFF \
+	-D LLVM_INCLUDE_TESTS=OFF \
+	-D LLVM_BUILD_TESTS=OFF \
+	-D LLVM_BUILD_DOCS=OFF \
+	-D LLVM_BINUTILS_INCDIR=/usr/include
+
+	ninja all
+}
+
+package() {
+	cd $pkgname-$pkgver.src/build
+
+	DESTDIR=$pkgdir ninja install
+
+	pip3 install setuptools
+
+	pushd ../utils/lit
+	python3 setup.py install --root="$pkgdir" -O1
+	popd
+
+	install -d "$pkgdir/usr/lib/bfd-plugins"
+	ln -s ../LLVMgold.so "$pkgdir/usr/lib/bfd-plugins/LLVMgold.so"
+}

@@ -1,0 +1,22 @@
+pkgname=libheif
+pkgver=1.15.2
+pkgrel=1
+arch=(x86_64)
+depends=(libaom libx265 libjpeg libpng gdk-pixbuf)
+makedepends=(make glibc)
+source=(https://github.com/strukturag/libheif/releases/download/v$pkgver/libheif-$pkgver.tar.gz)
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure \
+	--prefix=/usr
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR=$pkgdir install
+}

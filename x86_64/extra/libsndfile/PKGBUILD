@@ -1,0 +1,39 @@
+pkgname=libsndfile
+pkgver=1.2.0
+pkgrel=1
+arch=('x86_64')
+depends=(alsa-lib sqlite3 flac lame mpg123 libogg opus libvorbis)
+source=(https://github.com/$pkgname/$pkgname/releases/download/$pkgver/$pkgname-$pkgver.tar.xz)
+
+prepare() {
+	mkdir -p static shared
+
+	# Static
+	cmake \
+	-S $pkgname-$pkgver \
+	-G Ninja \
+	-B static \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr
+
+	# Shared
+	cmake \
+	-S $pkgname-$pkgver \
+	-G Ninja \
+	-B shared \
+	-D CMAKE_BUILD_TYPE=Release \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	-D BUILD_SHARED_LIBS=ON \
+	-D ENABLE_EXTERNAL_LIBS=ON \
+	-D ENABLE_MPEG=ON
+}
+
+build() {
+	ninja -C static
+	ninja -C shared
+}
+
+package() {
+	DESTDIR=$pkgdir ninja install -C static
+	DESTDIR=$pkgdir ninja install -C shared
+}

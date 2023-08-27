@@ -1,0 +1,30 @@
+pkgname=imath
+pkgver=3.1.7
+pkgrel=1
+arch=(x86_64)
+depends=(gcc python3)
+makedepends=(boost python3-pip cmake ninja cmake)
+source=(https://github.com/AcademySoftwareFoundation/Imath/archive/v$pkgver/$pkgname-$pkgver.tar.gz)
+
+prepare() {
+	mkdir -p build
+
+	cmake \
+	-S Imath-$pkgver \
+	-G Ninja \
+	-B build \
+	-D CMAKE_INSTALL_PREFIX=/usr\
+	-D PYTHON=ON
+}
+
+build() {
+	cd build
+
+	ninja
+}
+
+package() {
+	cd build
+
+	DESTDIR=$pkgdir ninja install
+}

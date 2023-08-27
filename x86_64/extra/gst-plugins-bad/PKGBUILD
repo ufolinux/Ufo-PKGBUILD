@@ -1,0 +1,41 @@
+pkgname=gst-plugins-bad
+pkgver=1.22.3
+pkgrel=1
+arch=('x86_64')
+depends=(
+	# GStreamer family
+	gstreamer gst-plugins-base
+
+	# bad
+	vulkan-icd-loader vulkan-headers
+	bluez libavtp bzip2 webrtc-audio-processing
+	nettle libxml2 qrencode json-glib libva libxkbcommon
+	libx264 libx265)
+makedepends=(valgrind bash-completion python3 mesa ninja bison)
+source=(https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugins-bad-$pkgver.tar.xz)
+
+prepare() {
+	cd "${pkgname}-${pkgver}"
+
+	mkdir -p build
+}
+
+build() {
+	cd "${pkgname}-${pkgver}"/build
+
+	meson \
+	--wrap-mode=nofallback \
+	--prefix=/usr \
+	--buildtype=release	\
+	-D package-origin=https://ufolinux.tk \
+	-D gst-plugins-bad:package-name="[GStreamer-BAD]: $pkgver - UFOLINUX" \
+	-D gst-plugins-bad:package-origin=https://ufolinux.tk
+
+	ninja
+}
+
+package() {
+	cd "${pkgname}-${pkgver}"/build
+
+	DESTDIR=$pkgdir ninja install
+}

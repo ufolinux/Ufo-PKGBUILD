@@ -1,0 +1,43 @@
+pkgname=libx265
+pkgver=3.5.2023.2
+compver=3.2.1
+pkgrel=1
+arch=('x86_64')
+depends=(glibc)
+makedepends=(nasm cmake)
+commitid=34532bda12a3a3141880582aa186a59cd4538ae6
+source=(https://bitbucket.org/multicoreware/x265_git/get/$commitid.tar.gz
+	http://ftp.videolan.org/pub/videolan/x265/x265_$compver.tar.gz)
+
+prepare() {
+	mv multicoreware-x265_git-* $pkgname-3.5
+	mkdir -p build build-$compver
+}
+
+build() {
+	# Build new pkg ver
+	cd build
+
+	cmake \
+	-GNinja \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	../$pkgname-3.5/source
+
+	ninja && cd ..
+
+	# Build compat layer for other apps that still use it ( futureproofing )
+	cd build-$compver
+
+	cmake \
+	-GNinja \
+	-D CMAKE_INSTALL_PREFIX=/usr \
+	../x265_$compver/source
+
+	ninja
+}
+
+package() {
+	DESTDIR=$pkgdir ninja -C build-$compver install
+
+	DESTDIR=$pkgdir ninja -C build install
+}
