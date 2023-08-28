@@ -4,7 +4,7 @@ pkgrel=1
 arch=('x86_64')
 depends=(bash coreutils grep kepler util-linux git)
 makedepends=(asciidoc)
-commitid=1a4de9b3a137c3a0eded360550142c7afa61a297
+commitid=19320919e2cd4baabf0b8f6187abbf54f6b7963d
 source=(git+https://github.com/ufolinux/base-install-scripts#commit=$commitid)
 
 build() {
