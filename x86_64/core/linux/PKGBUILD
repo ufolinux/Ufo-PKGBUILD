@@ -1,5 +1,5 @@
 pkgname=linux
-pkgver=5.17.8
+pkgver=6.1.0
 pkgrel=1
 pkgdesc='Linux'
 arch=('x86_64')
