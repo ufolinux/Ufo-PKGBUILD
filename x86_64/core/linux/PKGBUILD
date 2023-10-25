@@ -47,7 +47,7 @@ package() {
 
 	echo "[!]: Installing modules"
 	make INSTALL_MOD_PATH=$pkgdir INSTALL_MOD_STRIP=1 modules_install
-	rm $pkgdir/lib/modules/$pkgver-ufolinux/{source,build}
+	rm $pkgdir/lib/modules/$pkgver-rc7-ufolinux/{source,build}
 
 	mkdir -p $pkgdir/boot
 
