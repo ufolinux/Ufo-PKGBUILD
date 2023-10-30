@@ -4,7 +4,8 @@ pkgrel=3
 arch=('x86_64')
 depends=(glibc systemd libgudev libmd)
 install=$pkgname.install
-source=(https://roy.marples.name/downloads/dhcpcd/dhcpcd-$pkgver.tar.xz
+source=(https://github.com/NetworkConfiguration/dhcpcd/archive/refs/tags/v$pkgver.tar.gz
+https://roy.marples.name/downloads/dhcpcd/dhcpcd-$pkgver.tar.xz
 	dhcpcd.install
 	dhcpcd_.service
 	dhcpcd.service
