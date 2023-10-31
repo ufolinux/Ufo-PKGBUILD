@@ -80,6 +80,10 @@ package() {
   # Remove utilities provided by util-linux
   rm -f "$pkgdir"/usr/bin/{login,su,chsh,chfn,sg,nologin}
   rm -f "$pkgdir"/usr/sbin/{vipw,vigr}
+  rm -f "$pkgdir" /bin/login
+  rm -f "$pkgdir" /bin/su
+  rm -f "$pkgdir" /usr/sbin/nologin
+
 
   # but we keep newgrp, as sg is really an alias to it
   mv "$pkgdir"/usr/bin/{newgrp,sg}
