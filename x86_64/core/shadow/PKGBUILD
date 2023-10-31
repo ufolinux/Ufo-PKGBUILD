@@ -82,7 +82,7 @@ package() {
   rm -f "$pkgdir"/usr/sbin/{vipw,vigr}
   rm -f "$pkgdir"/bin/login
   rm -f "$pkgdir"/bin/su
-  rm -f "$pkgdir"/usr/sbin/nologin
+  rm -f "$pkgdir"/sbin/nologin
 
 
   # but we keep newgrp, as sg is really an alias to it
