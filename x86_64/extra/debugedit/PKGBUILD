@@ -3,7 +3,7 @@ pkgver=5.0
 pkgrel=1
 arch=('x86_64')
 url='https://sourceware.org/debugedit/'
-depends=('glibc' 'libelf')
+depends=('glibc' 'elfutils')
 source=(https://sourceware.org/ftp/debugedit/${pkgver}/debugedit-${pkgver}.tar.xz)
 
 prepare() {
