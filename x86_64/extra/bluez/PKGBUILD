@@ -1,11 +1,10 @@
 pkgname=bluez
-pkgver=5.63
+pkgver=5.68
 pkgrel=1
 arch=('x86_64')
-depends=(dbus libical systemd alsa-lib json-c ell)
+depends=(dbus libical systemd glib2 json-c ell)
 makedepends=(python3-pip)
-source=(https://www.kernel.org/pub/linux/bluetooth/${pkgname}-${pkgver}.tar.xz
-	bluetooth.modprobe)
+source=(https://www.kernel.org/pub/linux/bluetooth/${pkgname}-${pkgver}.tar.xz)
 
 prepare() {
 	pip install docutils
@@ -16,19 +15,27 @@ build() {
 
 	./configure \
 	--prefix=/usr \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
-	--with-dbusconfdir=/usr/share \
-	--enable-btpclient \
-	--enable-midi \
-	--enable-sixaxis \
-	--enable-mesh \
-	--enable-hid2hci \
-	--enable-deprecated \
-	--enable-experimental \
-	--disable-manpages
-
+    --sysconfdir=/etc \
+    --localstatedir=/var \
+    --disable-manpages \
+    --enable-library
 	make
+
+#	./configure \
+#	--prefix=/usr \
+#	--sysconfdir=/etc \
+#	--localstatedir=/var \
+#	--with-dbusconfdir=/usr/share \
+#	--enable-btpclient \
+#	--enable-midi \
+#	--enable-sixaxis \
+#	--enable-mesh \
+#	--enable-hid2hci \
+#	--enable-deprecated \
+#	--enable-experimental \
+#	--disable-manpages
+#	make
+
 }
 
 package() {
@@ -36,15 +43,22 @@ package() {
 
 	make DESTDIR=$pkgdir install
 
-	# Extra stuff
-	install -dm755 $pkgdir/usr/lib/modprobe.d
-	install -Dm644 $srcdir/bluetooth.modprobe $pkgdir/usr/lib/modprobe.d/bluetooth-usb.conf
-
-	install -dm755 $pkgdir/etc/bluetooth
+	ln -svf ../libexec/bluetooth/bluetoothd $pkgdir/usr/sbin
+	install -v -dm755 $pkgdir/etc/bluetooth
 	install -Dm644 $srcdir/"${pkgbase}"-${pkgver}/src/main.conf "${pkgdir}"/etc/bluetooth/main.conf
+#docs
+	install -v -dm755 $pkgdir/usr/share/doc/bluez-5.68
+	install -v -m644 $srcdir/doc/*.txt $pkgdir/usr/share/doc/bluez-5.68
 
-	install -dm755 $pkgdir/usr/lib/modules-load.d
-	echo "crypto_user" > $pkgdir/usr/lib/modules-load.d/bluez.conf
+	# Disabling other stuff bcz not required for only packaging bluez as a dependency
+#	install -dm755 $pkgdir/usr/lib/modprobe.d
+#	install -Dm644 $srcdir/bluetooth.modprobe $pkgdir/usr/lib/modprobe.d/bluetooth-usb.conf
 
-	ln -fs /usr/lib/systemd/user/obex.service $pkgdir/usr/lib/systemd/user/dbus-org.bluez.obex.service
+#	install -dm755 $pkgdir/etc/bluetooth
+#	install -Dm644 $srcdir/"${pkgbase}"-${pkgver}/src/main.conf "${pkgdir}"/etc/bluetooth/main.conf
+
+#	install -dm755 $pkgdir/usr/lib/modules-load.d
+#	echo "crypto_user" > $pkgdir/usr/lib/modules-load.d/bluez.conf
+
+#	ln -fs /usr/lib/systemd/user/obex.service $pkgdir/usr/lib/systemd/user/dbus-org.bluez.obex.service
 }
