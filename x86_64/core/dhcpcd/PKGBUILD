@@ -1,22 +1,26 @@
 pkgname=dhcpcd
-pkgver=9.4.1
-pkgrel=3
+pkgver=10.0.4
+pkgrel=1
 arch=('x86_64')
 depends=(glibc systemd libgudev libmd)
 install=$pkgname.install
-source=(https://github.com/NetworkConfiguration/dhcpcd/archive/refs/tags/v$pkgver.tar.gz
-https://roy.marples.name/downloads/dhcpcd/dhcpcd-$pkgver.tar.xz
+source=(https://github.com/NetworkConfiguration/dhcpcd/releases/download/v$pkgver/dhcpcd-$pkgver.tar.xz
 	dhcpcd.install
 	dhcpcd_.service
 	dhcpcd.service
 	dhcpcd.sysusers
 	dhcpcd.tmpfiles)
 
+prepare() {
+  printf "# Don't attempt to obtain an IPv4LL address if we failed to get one via DHCP.  See RFC 3927.\nnoipv4ll\n" >> $pkgname-$pkgver/src/$pkgname.conf
+}
+
 build() {
 	cd $pkgname-$pkgver
 
 	./configure \
 	--prefix=/usr \
+	--privsepuser=$pkgname \
 	--sysconfdir=/etc \
 	--dbdir=/var/lib/dhcpcd \
 	--runstatedir=/run \
@@ -34,4 +38,8 @@ package() {
 	install -Dm644 "$srcdir/dhcpcd.service" "$pkgdir/usr/lib/systemd/system/dhcpcd.service"
 	install -Dm644 "$srcdir/dhcpcd.sysusers" "$pkgdir/usr/lib/sysusers.d/dhcpcd.conf"
 	install -Dm644 "$srcdir/dhcpcd.tmpfiles" "$pkgdir/usr/lib/tmpfiles.d/dhcpcd.conf"
+
+	# strip files that somehow won't get stripped automatically
+	strip "$pkgdir/usr/sbin/$pkgname"
+	strip "$pkgdir/usr/lib/$pkgname/dev/udev.so"
 }
