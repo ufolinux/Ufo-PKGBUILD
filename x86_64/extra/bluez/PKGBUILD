@@ -48,7 +48,7 @@ package() {
 	install -Dm644 $srcdir/"${pkgbase}"-${pkgver}/src/main.conf "${pkgdir}"/etc/bluetooth/main.conf
 #docs
 	install -v -dm755 $pkgdir/usr/share/doc/bluez-5.68
-	install -v -m644 $srcdir/doc/*.txt $pkgdir/usr/share/doc/bluez-5.68
+	install -v -m644 $srcdir/$pkgname-$pkgver/doc/*.txt $pkgdir/usr/share/doc/bluez-5.68
 
 	# Disabling other stuff bcz not required for only packaging bluez as a dependency
 #	install -dm755 $pkgdir/usr/lib/modprobe.d
