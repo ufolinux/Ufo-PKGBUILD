@@ -1,5 +1,6 @@
-pkgname=(openldap)
-pkgver=2.6.1
+pkgbase=openldap
+pkgname=('openldap' 'libldap')
+pkgver=2.6.7
 pkgrel=1
 arch=('x86_64')
 depends=('e2fsprogs' 'util-linux' 'chrpath' 'unixodbc' 'libsodium' 'systemd')
@@ -9,7 +10,7 @@ backup=('etc/openldap/ldap.conf'
     'etc/openldap/slapd.conf'
     'etc/openldap/slapd.ldif')
 source=(
-https://www.openldap.org/software/download/OpenLDAP/openldap-release/${pkgname}-${pkgver}.tgz
+https://www.openldap.org/software/download/OpenLDAP/openldap-release/${pkgbase}-${pkgver}.tgz
 openldap.tmpfiles
 openldap.sysusers)
 
@@ -22,7 +23,7 @@ _extra_modules=(
 )
 
 prepare() {
-    cd ${pkgname}-${pkgver}
+    cd ${pkgbase}-${pkgver}
 
     # change perms from 0644 to 0755
     sed -i 's|-m 644 $(LIBRARY)|-m 755 $(LIBRARY)|' libraries/{liblber,libldap}/Makefile.in
@@ -39,7 +40,7 @@ prepare() {
 }
 
 build() {
-    cd ${pkgname}-${pkgver}
+    cd ${pkgbase}-${pkgver}
 
     ./configure \
     --prefix=/usr \
@@ -75,7 +76,7 @@ build() {
 }
 
 package() {
-    cd ${pkgname}-${pkgver}
+    cd ${pkgbase}-${pkgver}
 
     for dir in include libraries doc/man/man3 clients servers doc/man/man{1,5,8} ; do
         pushd ${dir}
