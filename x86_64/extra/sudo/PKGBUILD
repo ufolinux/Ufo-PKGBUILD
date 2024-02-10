@@ -13,7 +13,7 @@ source=(https://github.com/sudo-project/sudo/archive/refs/tags/SUDO_1_9_8p2.tar.
 )
 
 build() {
-        cd sudo-SUDO_1_9_9
+        cd sudo-SUDO_1_9_8p2
 
 	./configure --prefix=/usr         \
 	            --bindir=/bin         \
@@ -32,7 +32,7 @@ build() {
 }
 
 package() {
-	cd sudo-SUDO_1_9_9
+	cd sudo-SUDO_1_9_8p2
 
 	mkdir -p $pkgdir/usr/share/doc/sudo
 	make DESTDIR=$pkgdir install
