@@ -2,7 +2,7 @@ pkgname=sudo
 pkgver=1.9.9
 pkgrel=1
 arch=('x86_64')
-depends=(glibc openssl linux-pam libldap zlib)
+depends=(glibc openssl linux-pam openldap zlib)
 backup=('etc/pam.d/sudo'
 	'etc/sudo.conf'
 	'etc/sudo_logsrvd.conf'
