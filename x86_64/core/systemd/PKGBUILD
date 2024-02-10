@@ -1,18 +1,17 @@
 pkgname=systemd
-pkgver=251
+pkgver=252.14
 pkgrel=1
 arch=('x86_64')
 depends=('acl' 'gperf' 'lz4' 'xz' 'linux-pam' 'elfutils'
 	'kmod' 'libcap' 'libidn2' 'libgcrypt'
 	'libxslt' 'util-linux'
 	'shadow' 'gnu-efi'
-	'libxkbcommon'
+	'libxkbcommon' 'cryptsetup'
 	'bash-completion' 'p11-kit'
 	'gnutls')
 makedepends=('meson' 'docbook-xsl' 'git' 'rsync' 'intltool' 'python3-pip')
 source=("https://github.com/systemd/systemd-stable/archive/refs/tags/v${pkgver}.tar.gz"
 	'ufolinux.conf'
-	'initrd-ufolinux.conf'
 	'loader.conf'
 	'systemd-user.pam'
 	'systemd-hook'
@@ -68,7 +67,7 @@ build() {
 		-D docdir=/usr/share/doc/systemd \
 		-D dbuspolicydir=/usr/share/dbus-1/system.d \
 		-D sbat-distro='ufolinux' \
-		-D sbat-distro-summary='Ufo Linux'\
+		-D sbat-distro-summary='Ufolinux'\
 		-D sbat-distro-pkgname="${pkgname}" \
 		-D sbat-distro-version="${pkgver}" \
 		-D sbat-distro-url="https://ufolinux.tk" \

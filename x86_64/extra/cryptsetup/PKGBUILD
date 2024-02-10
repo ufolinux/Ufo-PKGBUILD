@@ -1,17 +1,18 @@
 pkgname=cryptsetup
-pkgver=2.4.3
+pkgver=2.6.1
 pkgrel=1
 arch=('x86_64')
-depends=(popt lvm2 json-c)
+depends=(popt lvm2 json-c openssl util-linux)
 makedepends=(gcc)
-source=(https://www.kernel.org/pub/linux/utils/cryptsetup/v2.4/cryptsetup-$pkgver.tar.xz)
+source=(https://www.kernel.org/pub/linux/utils/cryptsetup/v2.6/cryptsetup-$pkgver.tar.xz)
 
 build() {
 	cd $pkgname-$pkgver
 
 	./configure	\
 	--prefix=/usr	\
-	--disable-ssh-token
+	--disable-ssh-token \
+	--disable-asciidoc
 
 	make
 }

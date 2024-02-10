@@ -1,9 +1,9 @@
 pkgname=kepler
 pkgver=2023.1
-pkgrel=1
+pkgrel=2
 arch=('x86_64')
 depends=(zstd bash glibc libarchive curl gpgme libassuan debugedit)
-commitid=0d9daf3f35cfbba0e5d50538189e983bb6666480
+commitid=e400242a0eea5d0d090192b11b80565f157e35ae
 replaces=(pacman)
 source=(git+https://github.com/ufolinux/kepler#commit=$commitid)
 
