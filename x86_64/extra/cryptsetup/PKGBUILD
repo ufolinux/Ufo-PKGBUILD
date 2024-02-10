@@ -1,10 +1,10 @@
 pkgname=cryptsetup
-pkgver=2.6.1
+pkgver=2.7.0
 pkgrel=1
 arch=('x86_64')
 depends=(popt lvm2 json-c openssl util-linux)
 makedepends=(gcc)
-source=(https://www.kernel.org/pub/linux/utils/cryptsetup/v2.6/cryptsetup-$pkgver.tar.xz)
+source=(https://www.kernel.org/pub/linux/utils/cryptsetup/v2.7/cryptsetup-$pkgver.tar.xz)
 
 build() {
 	cd $pkgname-$pkgver
