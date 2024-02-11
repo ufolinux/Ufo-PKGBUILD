@@ -1,5 +1,5 @@
 pkgname=iptables
-pkgver=1.8.8
+pkgver=1.8.9
 pkgrel=1
 arch=(x86_64)
 depends=(libnftnl libpcap libcap libnfnetlink bash)
