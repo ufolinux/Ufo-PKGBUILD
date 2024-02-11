@@ -6,8 +6,8 @@ arch=('x86_64')
 source=(os-release neofetch)
 depends=(
 	# Base packages
-	accountsservice ca-certificates diffutils file gnu-efi kmod libnl linux-pam pciutils procps-ng tar xz
-	acl dosfstools filesystem gzip less libseccomp lz4 pcre readline texinfo zlib
+	accountsservice ca-certificates diffutils file gnu-efi kmod libnl linux-pam pciutils procps-ng glibc tar xz
+	acl dosfstools filesystem gzip less libseccomp lz4 pcre readline texinfo zlib libpng zstd
 	attr coreutils dracut freetype2 iana-etc libarchive libtasn1 lzo pcre2 sed tzdata
 	cpio duktape fuse2 icu libcap libcap-ng iptables libtool ncurses shadow util-linux
 	bash curl e2fsprogs gawk inetutils libevent libx11 openssl pkgconf squashfs-tools wget
