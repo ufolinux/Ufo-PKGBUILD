@@ -1,5 +1,5 @@
 pkgname=base-system
-pkgver=2023.1
+pkgver=2024.1
 pkgrel=1
 pkgdesc="Basic packages required for a bootable ufo system"
 arch=('x86_64')
