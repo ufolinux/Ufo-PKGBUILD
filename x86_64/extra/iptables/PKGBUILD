@@ -4,7 +4,7 @@ pkgrel=1
 arch=(x86_64)
 depends=(libnftnl libpcap libcap libnfnetlink bash)
 backup=(etc/ethertypes etc/iptables/{ip,ip6}tables.rules)
-source=(https://www.netfilter.org/projects/iptables/files/$pkgname-$pkgver.tar.bz2
+source=(https://www.netfilter.org/projects/iptables/files/$pkgname-$pkgver.tar.xz
         empty.rules simple_firewall.rules empty-{filter,mangle,nat,raw,security}.rules
         {arp,eb,ip,ip6}tables.service iptables-{legacy,nft}-flush)
 
