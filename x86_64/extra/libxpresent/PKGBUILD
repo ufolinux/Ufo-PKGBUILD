@@ -4,7 +4,7 @@ pkgrel=1
 arch=('x86_64')
 depends=('libxfixes' 'libxrandr')
 makedepends=('util-macros' 'xorgproto')
-source=(https://xorg.freedesktop.org/archive/individual/lib/libXpresent--$pkgver.tar.xz)
+source=(https://xorg.freedesktop.org/archive/individual/lib/libXpresent-$pkgver.tar.xz)
 
 build() {
 	cd libXpresent-$pkgver
