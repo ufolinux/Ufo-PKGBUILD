@@ -1,0 +1,19 @@
+pkgname=libxxf86dga
+pkgver=1.1.4
+pkgrel=1
+arch=('x86_64')
+depends=('libx11')
+makedepends=('util-macros' 'xorgproto' 'libx11' 'libxext')
+source=(https://xorg.freedesktop.org/releases/individual/lib/libxxf86dga-$pkgver.tar.bz2)
+
+build() {
+	cd libxxf86dga-$pkgver
+
+	./configure --prefix=/usr --sysconfdir=/etc
+}
+
+package() {
+	cd libxxf86dga-$pkgver
+
+	make DESTDIR=$pkgdir install
+}

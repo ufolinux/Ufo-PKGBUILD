@@ -1,0 +1,21 @@
+pkgname=libxpresent
+pkgver=1.0.1
+pkgrel=1
+arch=('x86_64')
+depends=('libxfixes' 'libxrandr')
+makedepends=('util-macros' 'xorgproto')
+source=(https://xorg.freedesktop.org/releases/individual/lib/libxpresent-$pkgver.tar.xz)
+
+build() {
+	cd libxpresent-$pkgver
+
+	./configure --prefix=/usr --sysconfdir=/etc
+    sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+    make
+}
+
+package() {
+	cd libxpresent-$pkgver
+
+	make DESTDIR=$pkgdir install
+}
