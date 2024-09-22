@@ -1,0 +1,25 @@
+pkgname=libxfce4ui
+pkgver=4.19.5
+xver=4.19
+pkgrel=1
+arch=('x86_64')
+depends=(gtk+ xfconf gtk-doc gobject-introspection libgudev)
+makedepends=()
+source=(https://archive.xfce.org/src/xfce/$pkgname/$xver/$pkgname-$pkgver.tar.bz2)
+
+build() {
+	cd $pkgname-$pkgver
+
+	./configure		\
+	--prefix=/usr		\
+	--sysconfdir=/etc	\
+	--with-vendor-info='Drunk Linux'
+
+	make
+}
+
+package() {
+	cd $pkgname-$pkgver
+
+	make DESTDIR=$pkgdir install
+}
