@@ -1,0 +1,12 @@
+pkgname=junit4
+pkgver=4.13.2
+pkgrel=1
+arch=(x86_64)
+depends=(openjdk-17 hamcrest)
+source=(https://repo1.maven.org/maven2/junit/junit/$pkgver/junit-$pkgver.jar)
+
+package() {
+	install -D -m 644 junit-$pkgver.jar $pkgdir/usr/share/java/junit-$pkgver.jar
+
+	ln -s junit-$pkgver.jar $pkgdir/usr/share/java/junit.jar
+}

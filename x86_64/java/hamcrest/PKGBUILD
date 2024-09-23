@@ -1,0 +1,26 @@
+pkgname=hamcrest
+pkgver=1.3
+pkgrel=1
+arch=(x86_64)
+depends=(openjdk-17)
+makedepends=()
+durl=https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/hamcrest
+
+source=($durl/$pkgname-core-$pkgver.jar
+	$durl/$pkgname-library-$pkgver.jar
+	$durl/$pkgname-generator-$pkgver.jar
+	$durl/$pkgname-integration-$pkgver.jar)
+noextract=($pkgname-core-$pkgver.jar
+	$pkgname-library-$pkgver.jar
+	$pkgname-generator-$pkgver.jar
+	$pkgname-integration-$pkgver.jar)
+
+package() {
+	install -dm755 $pkgdir/usr/share/java/$pkgname
+
+	for ham in core library generator integration; do
+		cp $pkgname-$ham-$pkgver.jar $pkgdir/usr/share/java/$pkgname/$ham-$pkgver.jar
+		ln -s $ham-$pkgver.jar ${pkgdir}/usr/share/java/$pkgname/$ham.jar
+		ln -s $pkgname/$ham-$pkgver.jar $pkgdir/usr/share/java/$pkgname-$ham.jar
+	done
+}

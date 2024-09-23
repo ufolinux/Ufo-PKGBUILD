@@ -1,0 +1,108 @@
+pkgname=openjdk-17
+rname=jdk17u-dev-jdk
+# major version
+maver=17
+# minor version
+miver=0
+# security version
+sver=9
+# update version
+uver=0
+# Whole version
+pkgver=$maver.$miver.$sver
+pkgrel=1
+arch=('x86_64')
+depends=('alsa-lib' 'cpio' 'cups' 'unzip' 'elfutils' 'libpng'
+	'harfbuzz' 'freetype2' 'libjpeg' 'which' 'zip' 'xorg-server'
+	'lcms' 'elfutils' 'giflib' 'harfbuzz' 'gtk3+' 'gtk2+' 'libnet')
+makedepends=('git' 'openjdk-17')
+options=(!lto)
+source=(https://github.com/openjdk/jdk17u-dev/archive/refs/tags/jdk-$pkgver+$uver.tar.gz
+	freedesktop-java.desktop
+	freedesktop-jconsole.desktop
+	freedesktop-jshell.desktop)
+backup=(etc/jdk-17/logging.properties
+          etc/jdk-17/management/jmxremote.access
+          etc/jdk-17/management/jmxremote.password.template
+          etc/jdk-17/management/management.properties
+          etc/jdk-17/net.properties
+          etc/jdk-17/security/java.policy
+          etc/jdk-17/security/java.security
+          etc/jdk-17/security/policy/README.txt
+          etc/jdk-17/security/policy/limited/default_US_export.policy
+          etc/jdk-17/security/policy/limited/default_local.policy
+          etc/jdk-17/security/policy/limited/exempt_local.policy
+          etc/jdk-17/security/policy/unlimited/default_US_export.policy
+          etc/jdk-17/security/policy/unlimited/default_local.policy
+          etc/jdk-17/sound.properties
+)
+install=install_jdk.sh
+
+prepare() {
+	cd $rname-$pkgver-$uver
+}
+
+build() {
+	cd $rname-$pkgver-$uver
+	#unset JAVA_HOME
+
+	bash configure \
+	--with-version-build="${uver}" \
+	--with-version-pre="" \
+    --with-version-opt="" \
+    --with-stdc++lib=dynamic \
+	--with-lcms=system \
+	--with-libjpeg=system \
+	--with-giflib=system \
+	--with-libpng=system\
+	--with-libpng=system \
+	--with-zlib=system \
+	--with-harfbuzz=system \
+    --with-jvm-features=zgc \
+    --enable-unlimited-crypto \
+    --with-native-debug-symbols=internal \
+	--disable-warnings-as-errors \
+	--prefix=/usr
+
+	make images
+
+	# https://bugs.openjdk.java.net/browse/JDK-8173610
+	find "../${_imgdir}" -iname '*.so' -exec chmod +x {} \;
+}
+
+package() {
+	cd $rname-$pkgver-$uver
+
+	install -vdm755 $pkgdir/opt/jdk-17
+	cp -Rv build/*/images/jdk/* $pkgdir/opt/jdk-17
+
+	# Remove .debuginfo from bins
+	rm $pkgdir/opt/jdk-17/bin/*.debuginfo
+
+	chown -R root:root $pkgdir/opt/jdk-17
+	for s in 16 24 32 48; do
+		install -vDm644 src/java.desktop/unix/classes/sun/awt/X11/java-icon${s}.png \
+		$pkgdir/usr/share/icons/hicolor/${s}x${s}/apps/java.png
+	done
+
+	# Move conf files to /etc/jdk-17 and link back to opt/jdk-17/conf
+	install -dm 755 $pkgdir/etc
+	mv $pkgdir/opt/jdk-17/conf $pkgdir/etc/jdk-17
+	ln -sf /etc/jdk-17 $pkgdir/opt/jdk-17/conf
+
+	mkdir -pv $pkgdir/usr/share/applications
+
+	# Icons
+	for s in 16 24 32 48; do
+		install -Dm 644 \
+			"${srcdir}/$rname-$pkgver-$uver/src/java.desktop/unix/classes/sun/awt/X11/java-icon${s}.png" \
+			"${pkgdir}/usr/share/icons/hicolor/${s}x${s}/apps/${pkgbase}.png"
+	done
+
+	# Desktop files
+	for f in jconsole java jshell; do
+		install -Dm 644 \
+			"${srcdir}/freedesktop-${f}.desktop" \
+			"${pkgdir}/usr/share/applications/${f}-${pkgbase}.desktop"
+	done
+}
